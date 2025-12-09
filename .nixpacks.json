@@ -1,0 +1,13 @@
+{
+  "phases": {
+    "setup": {
+      "nixPkgs": ["nodejs-18_x", "chromium"]
+    },
+    "install": {
+      "cmds": ["npm ci"]
+    }
+  },
+  "start": {
+    "cmd": "npm start"
+  }
+}
