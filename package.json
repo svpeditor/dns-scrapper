@@ -1,11 +1,13 @@
 {
   "name": "dns-scraper",
   "version": "1.0.0",
+  "description": "DNS scraper for n8n",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.18.2",
-    "puppeteer": "21.4.1"
+    "puppeteer-core": "^22.6.1"
   }
 }
