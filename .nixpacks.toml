@@ -1,7 +1,8 @@
-[packages]
-apt = [
-  "chromium"
-]
+[phases.setup]
+nixPkgs = ['nodejs-18_x', 'chromium']
+
+[phases.install]
+cmds = ['npm ci']
 
 [start]
-cmd = "node server.js"
+cmd = 'npm start'
