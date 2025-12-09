@@ -11,7 +11,7 @@ app.get('/scrape', async (req, res) => {
     try {
         browser = await puppeteer.launch({
             headless: "new",
-            executablePath: "/usr/bin/chromium",   // ← ВАЖНО! Рабочий путь для Railway
+            // НЕ указываем executablePath → Puppeteer использует встроенный Chromium
             args: [
                 "--no-sandbox",
                 "--disable-setuid-sandbox",
@@ -38,7 +38,7 @@ app.get('/scrape', async (req, res) => {
         res.send(html);
 
     } catch (err) {
-        console.error("SCRAPE ERROR:", err);
+        console.error("SCRAPER ERROR:", err);
         res.status(500).json({ error: err.message });
     } finally {
         if (browser) await browser.close();
