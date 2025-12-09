@@ -1,13 +1,16 @@
 {
   "name": "dns-scraper",
   "version": "1.0.0",
-  "description": "DNS scraper for n8n",
+  "description": "Puppeteer scraper for Railway",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.18.2",
-    "puppeteer-core": "^22.6.1"
+    "puppeteer": "^21.6.1"
+  },
+  "engines": {
+    "node": ">=18.x"
   }
 }
