@@ -1,0 +1,7 @@
+[packages]
+apt = [
+  "chromium"
+]
+
+[start]
+cmd = "node server.js"
