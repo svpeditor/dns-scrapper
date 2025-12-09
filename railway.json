@@ -2,7 +2,18 @@
   "build": {
     "builder": "NIXPACKS"
   },
-  "deploy": {
-    "restartPolicyType": "ALWAYS"
+  "nixpacks": {
+    "pkgs": [
+      "chromium",
+      "chromiumDriver",
+      "libnss",
+      "libatk",
+      "libatk-bridge",
+      "libcups",
+      "libxss",
+      "libgtk-3",
+      "libgbm",
+      "libasound2"
+    ]
   }
 }
