@@ -1,13 +1,14 @@
 {
   "name": "dns-scraper",
   "version": "1.0.0",
-  "description": "Puppeteer scraper for Railway",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
     "express": "4.18.2",
+    "puppeteer-extra": "3.3.6",
+    "puppeteer-extra-plugin-stealth": "2.11.2",
     "puppeteer": "21.11.0"
   },
   "engines": {
