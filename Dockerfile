@@ -1,6 +1,5 @@
 FROM node:18-slim
 
-# Установка Chromium и зависимостей
 RUN apt-get update && apt-get install -y \
     chromium \
     chromium-sandbox \
@@ -24,13 +23,8 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-
 COPY package*.json ./
-
 RUN npm ci --only=production
-
 COPY . .
-
 EXPOSE 8080
-
 CMD ["npm", "start"]
