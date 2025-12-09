@@ -5,7 +5,7 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 
 async function launchBrowser() {
-  return await puppeteer.launch({
+  const browser = await puppeteer.launch({
     headless: 'new',
     args: [
       '--no-sandbox',
@@ -30,6 +30,18 @@ async function launchBrowser() {
     ],
     ignoreHTTPSErrors: true
   });
+
+  // Удаляем webdriver флаг для обхода детекции
+  const pages = await browser.pages();
+  if (pages.length > 0) {
+    await pages[0].evaluateOnNewDocument(() => {
+      Object.defineProperty(navigator, 'webdriver', {
+        get: () => undefined
+      });
+    });
+  }
+
+  return browser;
 }
 
 app.get("/", (req, res) => {
@@ -55,19 +67,55 @@ app.get("/scrape", async (req, res) => {
     
     const page = await browser.newPage();
     
-    // Set user agent to avoid detection
+    // Убираем признаки автоматизации
+    await page.evaluateOnNewDocument(() => {
+      Object.defineProperty(navigator, 'webdriver', {
+        get: () => undefined
+      });
+      
+      // Подделываем chrome объект
+      window.chrome = {
+        runtime: {}
+      };
+      
+      // Подделываем permissions
+      const originalQuery = window.navigator.permissions.query;
+      window.navigator.permissions.query = (parameters) => (
+        parameters.name === 'notifications' ?
+          Promise.resolve({ state: Notification.permission }) :
+          originalQuery(parameters)
+      );
+    });
+    
+    // Set realistic user agent
     await page.setUserAgent(
-      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
     );
     
-    // Set viewport
+    // Set realistic viewport
     await page.setViewport({ width: 1920, height: 1080 });
+    
+    // Set extra headers
+    await page.setExtraHTTPHeaders({
+      'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+      'Accept-Encoding': 'gzip, deflate, br',
+      'Connection': 'keep-alive',
+      'Upgrade-Insecure-Requests': '1',
+      'Sec-Fetch-Dest': 'document',
+      'Sec-Fetch-Mode': 'navigate',
+      'Sec-Fetch-Site': 'none',
+      'Sec-Fetch-User': '?1'
+    });
     
     console.log('[SCRAPE] Navigating to URL...');
     await page.goto(url, { 
       waitUntil: "networkidle2",
-      timeout: 30000 
+      timeout: 60000 
     });
+    
+    // Ждём дополнительно, если есть JS редирект от Qrator
+    await page.waitForTimeout(3000);
     
     console.log('[SCRAPE] Page loaded, extracting HTML...');
     const html = await page.content();
