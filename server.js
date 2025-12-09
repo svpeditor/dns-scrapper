@@ -11,24 +11,27 @@ app.get('/scrape', async (req, res) => {
     try {
         browser = await puppeteer.launch({
             headless: "new",
-            executablePath: "/usr/bin/chromium-browser",
+            executablePath: "/usr/bin/chromium",   // ← ВАЖНО! Рабочий путь для Railway
             args: [
                 "--no-sandbox",
                 "--disable-setuid-sandbox",
                 "--disable-dev-shm-usage",
                 "--disable-gpu",
-                "--disable-software-rasterizer"
+                "--disable-software-rasterizer",
+                "--single-process",
+                "--no-zygote"
             ]
         });
 
         const page = await browser.newPage();
+
         await page.setUserAgent(
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36"
         );
 
         await page.goto(url, {
             waitUntil: "networkidle2",
-            timeout: 30000
+            timeout: 60000
         });
 
         const html = await page.content();
@@ -43,4 +46,4 @@ app.get('/scrape', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log("Scraper running on " + PORT));
+app.listen(PORT, () => console.log("Scraper running on port " + PORT));
